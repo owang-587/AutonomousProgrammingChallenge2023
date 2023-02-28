@@ -1,0 +1,20 @@
+Product Design
+
+I. Product Definition
+- top speed can't exceed 48km/h (max out at 46 km/h going down slopes)
+- right-hand drive of lane 
+- within 3m of the each goal (15 total)
+- finish objectives within 10 minutes
+- time over efficiency?
+
+II. Design Development
+- initialize vehicle sensors
+- engage vehicle collision movements
+- optimize path planning with A* search algorithm
+     - use A* for a top level, linear movement algorithm
+     - utilize sensors for reaction to the environment during our top level algorithm
+
+III. Submission Flowchart
+1-3. ensure vehicle sensor is fully working, collecting all relavent data needed for path planning
+4-7. debug vehicle collision movements, use sensor movement and primal vehicle movement to complete track, map track
+8-12. create and optimize map planning to compare coordinates and find shortest path
