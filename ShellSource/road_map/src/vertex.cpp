@@ -2,43 +2,26 @@
 
 #include <algorithm>
 
-Vertex::Vertex(float x, float y, int layer){
-    this->x = x;
-    this->y = y;
-    this->layer = layer;
+
+
+
+Vertex::Vertex(bool isGoalPoint){
+    this->isGoalPoint = isGoalPoint;
 }
 
-void Vertex::addEdge(std::string endId, DIRECTION startDirection, DIRECTION endDirection, double distance){
-    if (!isEdge(endId, startDirection)){
-        Edge newEdge(startDirection, endDirection, distance);
-        edges[endId].push_back(newEdge);
-    }
+void Vertex::addEdge(std::string endId, DIRECTION startDirection, double distance){
+    edges[endId] = Edge(startDirection, distance);
 }
 
-bool Vertex::isEdge(std::string endId, DIRECTION startDirection) const{
+bool Vertex::isEdge(std::string endId) const{
     return find(edges.begin(), edges.end(), endId) != edges.end();
 }
 
-double Vertex::getEdgeDistance(std::string endId, DIRECTION startDirection){
-    if (!isEdge(endId, startDirection)){
-        // probably should have an early return here but idk
-    }
-
-    for (auto edge : edges[endId]){
-        if (edge.startDirection == startDirection){
-            return edge.distance;
-        }
-    }
+double Vertex::getEdgeDistance(std::string endId) {
+    return edges[endId].distance;
 }
 
-std::vector<std::string> Vertex::getNeighbours(){
-
-  std::vector<std::string> neighbours;
-
-  for (auto it = edges.begin();
-    it != edges.end(); it++) {
-      neighbours.push_back(it->first);
-    }
-
-  return neighbours;
+std::unordered_map<std::string, Edge> Vertex::getEdges() const {
+  return edges;
 }
+

@@ -4,21 +4,32 @@
 
 #include "vertex.h"
 
-/*
-  Represents a graph using an adjacency list representation.
-  Vertices are id'd using integers.
-*/
+// make a workingpath inside of graph.cpp
+// remove the first constructor as it will be taken care of
+// use the working path to carry on 
+struct Path
+{
+  Path(double distance, std::vector<std::string> verticesTaken, DIRECTION startDirection, DIRECTION endDirection);
+
+  double distance;
+  std::vector<std::string> verticesTaken;
+  DIRECTION startDirection, endDirection;
+};
+
+
+
+
 class Graph {
 public:
   // No constructor or destructor are necessary this time.
   // A new instance will be an empty graph with no vertices.
 
-  // creates a vertex and adds it to the map of vertices
-  void createVertex(std::string id, int x, int y, int layer);
+  // creates an intersection and adds it to the map of vertices
+  void createVertex(std::string id, bool isGoalPoint = false);
 
   // creates an edge and adds it to the vertex's list of edges
   // NOTE: this is a directed graph so this is a one-way connection
-  void addEdge(std::string startId, std::string endId, DIRECTION startDirection, DIRECTION endDirection, double distance);
+  void addEdge(std::string startId, std::string endId, DIRECTION startDirection, double distance);
 
   // returns true if and only if the id is a vertex in the graph
   bool isVertex(std::string id) const;
@@ -27,22 +38,39 @@ public:
   // will certainly return false if neither vertex is in the graph
   bool isEdge(std::string startId, std::string endId, DIRECTION startDirection) ;
 
-  // returns a vector of the id's of the neighbours of the specified vertex
-  std::vector<std::string> getNeighbours(std::string id) ;
-
   // return the number of neighbours of v
-  int numNeighbours(std::string id) ;
+  int numNeighbours(std::string id);
 
   // returns the number of vertices in the graph
   int size() const;
 
-  // return a vector with the id of all vertices
-  std::vector<std::string> getVertices() ;
+  // return a vector of the id's of all vertices
+  std::vector<std::string> getVertices();
+
+  // makes the entire search tree
+  void createSearchTree();
+
+  // updates the search tree for one starting vertex
+  void updateSearchTree(std::string startId);
+
+  Path getShortestPath(std::string startId, std::string endId, DIRECTION startDirection);
 
 private:
-
+  int numOfGoalPoints = 0;
   std::unordered_map<std::string, Vertex> vertices;
-  
+
+  /*
+    there might be a better way to do this, but essentially first key is starting id,
+    second key is end id, and the pair has the distance and path taken
+  */
+  std::unordered_map<
+    std::string, 
+    std::unordered_map<
+      std::string,
+      std::vector<Path>
+    >
+  > searchTree;
+
 };
 
-#endif _GRAPH_H_
+#endif

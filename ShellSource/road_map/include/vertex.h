@@ -13,38 +13,37 @@ enum class DIRECTION{
 };
 
 struct Edge{
-    Edge(DIRECTION startDirection, DIRECTION endDirection, double distance){
+    Edge(DIRECTION startDirection, double distance){
         this->startDirection = startDirection;
-        this->endDirection = endDirection;
         this->distance = distance;
     }
-    DIRECTION startDirection, endDirection;
+    DIRECTION startDirection;
     double distance;
 };
 
 
 class Vertex {
 public:
+    bool isGoalPoint;
     // creates an instance of the vertex
-    Vertex(float x, float y, int layer);
+    Vertex(bool isGoalPoint);
 
     // adds an edge to the vertex with the given information
-    void addEdge(std::string endId, DIRECTION startDirection, DIRECTION endDirection, double distance);
+    void addEdge(std::string endId, DIRECTION startDirection, double distance);
 
     // returns true if the edge is a valid connection from this vertex
-    bool isEdge(std::string endId, DIRECTION startDirection) const;
+    bool isEdge(std::string endId) const;
 
     // returns the distance of the specified edge
-    double getEdgeDistance(std::string endId, DIRECTION startDirection);
+    double getEdgeDistance(std::string endId) ;
 
-    // returns a vector of the id's of all the neighbours of this vertex
-    std::vector<std::string> getNeighbours();
-    
+    // returns an unordered map of the neighbours and edges connecting them
+    std::unordered_map<std::string, Edge> getEdges() const ;
 
 private:
-    float x, y;
-    int layer;
-    std::unordered_map<std::string, std::vector<Edge>> edges;
+ 
+    std::unordered_map<std::string, Edge> edges;
+    
 };
 
-#endif _VERTEX_H_
+#endif
