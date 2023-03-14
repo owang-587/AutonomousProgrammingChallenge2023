@@ -7,7 +7,7 @@
 class Compare {
 public:
   bool operator()(Path a, Path b){
-    if(a.distance < b.distance){
+    if(a.distance > b.distance){
         return true;
     }
     return false;
@@ -93,24 +93,19 @@ void Graph::updateSearchTree(std::string startId){
 
   
   auto exploreEdge = [this, &goalPointSearchTree, &pathQueue, &pathsFound](Path currentPath, std::string neighbourId, Edge& edge){
-    
+    const std::string CURRENT_VERTEX = currentPath.verticesTaken.back();
     // check if we hit a goal point
-    if (vertices[neighbourId].isGoalPoint){
+    if (vertices[CURRENT_VERTEX].isGoalPoint){
       
       // make sure we didn't already find a path to this goal point by checking if the starting direction is the same
-      bool repeat = false;
-      for (const auto& foundPath : goalPointSearchTree[neighbourId]){
+      for (const auto& foundPath : goalPointSearchTree[CURRENT_VERTEX]){
         if (currentPath.startDirection == foundPath.startDirection){
-          repeat = true;
-          break;
+          return;
         }
       } 
-      if (repeat){
-        return;
-      }
 
       // if its a new goal point path, add it to the search tree
-      goalPointSearchTree[neighbourId].push_back(currentPath);
+      goalPointSearchTree[CURRENT_VERTEX].push_back(currentPath);
       pathsFound++;
     }
 
@@ -152,40 +147,8 @@ void Graph::updateSearchTree(std::string startId){
       Edge EDGE = connection.second;
 
       // stops us from going backwards
-      if (NEIGHBOUR_ID != PREVIOUS_VERTEX){
-        
+      if (NEIGHBOUR_ID != PREVIOUS_VERTEX){     
         exploreEdge(currentPath, NEIGHBOUR_ID, EDGE);
-
-        // this is the original without the lambda function in case the lambda function breaks during testing
-        // 
-        // // check if we hit a goal point
-        // if (vertices[NEIGHBOUR_ID].isGoalPoint){
-          
-        //   // make sure we didn't already find a path to this goal point by checking if the starting direction is the same
-        //   bool repeat = false;
-        //   for (const auto& foundPath : goalPointSearchTree[NEIGHBOUR_ID]){
-        //     if (currentPath.startDirection == foundPath.startDirection){
-        //       repeat = true;
-        //       break;
-        //     }
-        //   } 
-        //   if (repeat){
-        //     break;
-        //   }
-
-        //   // if its a new goal point path, add it to the search tree
-        //   goalPointSearchTree[NEIGHBOUR_ID].push_back(currentPath);
-        //   pathsFound++;
-        // }
-
-
-        // const double NEXT_DISTANCE = EDGE.distance + currentPath.distance;
-
-        // Path nextPath(NEXT_DISTANCE, currentPath.verticesTaken, currentPath.startDirection, EDGE.startDirection);
-        // // add the next node we are going to the vertex backtrace
-        // nextPath.verticesTaken.push_back(NEIGHBOUR_ID);
-
-        // pathQueue.push(nextPath);
       }
     }
   }

@@ -109,17 +109,18 @@ int main(){
   shortestPaths.push_back(graph.getShortestPath(goalPoints[1], goalPoints[0], DIRECTION::RIGHT));
 
   for (auto path : shortestPaths){
-    cout << "From " << path.verticesTaken.front() 
-              << " facing "  << to_string(path.startDirection) 
-              << " to " << path.verticesTaken.back() 
-              << " has a distance of " << path.distance << endl;
+    if (path.verticesTaken.size() > 0){
+      cout << "From " << path.verticesTaken.front() 
+           << " facing "  << to_string(path.startDirection) 
+           << " to " << path.verticesTaken.back() 
+           << " has a distance of " << path.distance << endl;
 
-    cout << "The path taken was: ";
-    for (auto vertex : path.verticesTaken){
+      cout << "The path taken was: ";
+      for (auto vertex : path.verticesTaken){
       cout << vertex << "->";
-    }
-    cout << endl;
+      }
+      cout << "Done" << endl;
   }
-
+}
   return 0;
 }
