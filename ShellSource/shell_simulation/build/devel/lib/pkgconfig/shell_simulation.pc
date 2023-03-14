@@ -1,8 +1,0 @@
-prefix=/home/owen/Documents/AutonomousProgrammingChallenge2023/ShellSource/shell_simulation/build/devel
-
-Name: shell_simulation
-Description: Description of shell_simulation
-Version: 0.0.0
-Cflags: -I/home/owen/Documents/AutonomousProgrammingChallenge2023/ShellSource/shell_simulation/include
-Libs: -L${prefix}/lib 
-Requires: std_msgs
