@@ -1,9 +1,9 @@
-#include "vertex.h"
+#include "../include/vertex.h"
 
 #include <algorithm>
 
 
-
+Vertex::Vertex(){}
 
 Vertex::Vertex(bool isGoalPoint){
     this->isGoalPoint = isGoalPoint;
@@ -14,7 +14,7 @@ void Vertex::addEdge(std::string endId, DIRECTION startDirection, double distanc
 }
 
 bool Vertex::isEdge(std::string endId) const{
-    return find(edges.begin(), edges.end(), endId) != edges.end();
+    return edges.find(endId) != edges.end();
 }
 
 double Vertex::getEdgeDistance(std::string endId) {

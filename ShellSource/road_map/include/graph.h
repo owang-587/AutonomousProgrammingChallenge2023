@@ -25,7 +25,7 @@ public:
   // A new instance will be an empty graph with no vertices.
 
   // creates an intersection and adds it to the map of vertices
-  void createVertex(std::string id, bool isGoalPoint = false);
+  void createVertex(std::string id, bool isGoalPoint);
 
   // creates an edge and adds it to the vertex's list of edges
   // NOTE: this is a directed graph so this is a one-way connection
@@ -46,6 +46,9 @@ public:
 
   // return a vector of the id's of all vertices
   std::vector<std::string> getVertices();
+
+  // only get the vertices that are goal points
+  std::vector<std::string> getGoalpoints();
 
   // makes the entire search tree
   void createSearchTree();

@@ -1,9 +1,10 @@
 #ifndef _VERTEX_H
 #define _VERTEX_H_
 
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
+
 
 enum class DIRECTION{
     UP,
@@ -13,10 +14,12 @@ enum class DIRECTION{
 };
 
 struct Edge{
+    Edge(){}
     Edge(DIRECTION startDirection, double distance){
         this->startDirection = startDirection;
         this->distance = distance;
     }
+
     DIRECTION startDirection;
     double distance;
 };
@@ -25,6 +28,7 @@ struct Edge{
 class Vertex {
 public:
     bool isGoalPoint;
+    Vertex();
     // creates an instance of the vertex
     Vertex(bool isGoalPoint);
 
@@ -41,7 +45,7 @@ public:
     std::unordered_map<std::string, Edge> getEdges() const ;
 
 private:
- 
+    
     std::unordered_map<std::string, Edge> edges;
     
 };

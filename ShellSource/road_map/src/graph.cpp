@@ -1,4 +1,4 @@
-#include "graph.h"
+#include "../include/graph.h"
 #include <math.h>
 #include <queue>
 #include <algorithm>
@@ -21,7 +21,7 @@ Path::Path(double distance, std::vector<std::string> verticesTaken, DIRECTION st
   this->endDirection = endDirection;
 }
 
-void Graph::createVertex(std::string id, bool isGoalPoint = false) {
+void Graph::createVertex(std::string id, bool isGoalPoint) {
   vertices[id] = Vertex(isGoalPoint);
   if (isGoalPoint){
     numOfGoalPoints++;
@@ -53,10 +53,22 @@ std::vector<std::string> Graph::getVertices() {
 
   std::vector<std::string> nodes;
 
-  for (auto it = vertices.begin();
-    it != vertices.end(); it++) {
+  for (auto it = vertices.begin();it != vertices.end(); it++) {
+    nodes.push_back(it->first);
+  }
+
+  return nodes;
+}
+
+std::vector<std::string> Graph::getGoalpoints() {
+
+  std::vector<std::string> nodes;
+
+  for (auto it = vertices.begin(); it != vertices.end(); it++) {
+    if (vertices[it->first].isGoalPoint){
       nodes.push_back(it->first);
     }
+  }
 
   return nodes;
 }
@@ -177,8 +189,14 @@ void Graph::updateSearchTree(std::string startId){
       }
     }
   }
+}
 
 
-  
-  
+
+Path Graph::getShortestPath(std::string startId, std::string endId, DIRECTION startDirection){
+  for (auto path : searchTree[startId][endId]){
+    if (path.startDirection == startDirection){
+      return path;
+    }
+  } 
 }
