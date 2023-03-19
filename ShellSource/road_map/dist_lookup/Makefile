@@ -1,5 +1,5 @@
 # Makefile contents here
-PROGRAM := search_tree
+PROGRAM := dist_lookup
 SRCS := $(wildcard *.cpp)
 OBJS := ${SRCS:.cpp=.o}
 CFLAGS := -g
@@ -8,19 +8,16 @@ CC = g++
 test: clean debug_compile
 	gdb ./$(PROGRAM)
 
-dijkstra: debug_compile
+dijkstra: clean debug_compile
 	./$(PROGRAM) < dijkstra-test.txt
 
-mst: debug_compile
+mst: clean debug_compile
 	./$(PROGRAM) < mst-test.txt
-
-mst1: debug_compile
-	./$(PROGRAM) < mst-test1.txt
 
 $(PROGRAM): $(SRCS)
 	$(CC) $(SRCS) -o $(PROGRAM) $(CFLAGS) -O3
 
-debug_compile: $(SRCS)
+debug_compile: clean $(SRCS)
 	$(CC) $(SRCS) -o $(PROGRAM) $(CFLAGS)
 	
 clean:

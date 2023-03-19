@@ -2,6 +2,7 @@
 #include <math.h>
 #include <queue>
 #include <algorithm>
+#include <iostream>
 
 // comparison override to use the priority queue
 class Compare {
@@ -89,26 +90,15 @@ void Graph::updateSearchTree(std::string startId){
 
   std::unordered_map<std::string, std::vector<Path> >& goalPointSearchTree = searchTree[startId]; 
   std::priority_queue<Path, std::vector<Path>, Compare> pathQueue;
-  int pathsFound = 0;
 
-  
-  auto exploreEdge = [this, &goalPointSearchTree, &pathQueue, &pathsFound](Path currentPath, std::string neighbourId, Edge& edge){
+  auto exploreEdge = [this, &goalPointSearchTree, &pathQueue](Path currentPath, std::string neighbourId, Edge& edge){
     const std::string CURRENT_VERTEX = currentPath.verticesTaken.back();
-    // check if we hit a goal point
-    if (vertices[CURRENT_VERTEX].isGoalPoint){
       
-      // make sure we didn't already find a path to this goal point by checking if the starting direction is the same
-      for (const auto& foundPath : goalPointSearchTree[CURRENT_VERTEX]){
-        if (currentPath.startDirection == foundPath.startDirection){
-          return;
-        }
-      } 
-
-      // if its a new goal point path, add it to the search tree
-      goalPointSearchTree[CURRENT_VERTEX].push_back(currentPath);
-      pathsFound++;
+    for (const auto& foundPath : goalPointSearchTree[neighbourId]){
+      if (currentPath.startDirection == foundPath.startDirection){
+        return;
+      }
     }
-
 
     const double NEXT_DISTANCE = edge.distance + currentPath.distance;
 
@@ -116,8 +106,8 @@ void Graph::updateSearchTree(std::string startId){
 
     // add the next node we are going to to the vertex backtrace
     nextPath.verticesTaken.push_back(neighbourId);
-
     pathQueue.push(nextPath);
+    goalPointSearchTree[neighbourId].push_back(nextPath);
   };
 
   // initialize the queue with the edge data of the starting vertex
@@ -125,15 +115,16 @@ void Graph::updateSearchTree(std::string startId){
     const std::string NEIGHBOUR_ID = connection.first;
     Edge EDGE = connection.second;
 
-    Path newPath(EDGE.distance, {startId, NEIGHBOUR_ID}, EDGE.startDirection, EDGE.startDirection);
-    pathQueue.push(newPath);
+    Path nextPath(EDGE.distance, {startId, NEIGHBOUR_ID}, EDGE.startDirection, EDGE.startDirection);
+    pathQueue.push(nextPath);
+    goalPointSearchTree[NEIGHBOUR_ID].push_back(nextPath);
   }
 
   // the number of directions we are exploring from is equal to the number of edges the vertex connects to
   int startingDirections = numNeighbours(startId);
 
   // we want a path for each goal point starting from every starting direction 
-  while (pathsFound < (numOfGoalPoints-1)*startingDirections){
+  while (!pathQueue.empty()){
     // take the first value from the priority queue and remove it
     Path currentPath = pathQueue.top();
     pathQueue.pop();
@@ -154,12 +145,6 @@ void Graph::updateSearchTree(std::string startId){
   }
 }
 
-
-
-Path Graph::getShortestPath(std::string startId, std::string endId, DIRECTION startDirection){
-  for (auto path : searchTree[startId][endId]){
-    if (path.startDirection == startDirection){
-      return path;
-    }
-  } 
+std::vector<Path> Graph::getShortestPaths(std::string startId, std::string endId){
+  return searchTree[startId][endId];
 }

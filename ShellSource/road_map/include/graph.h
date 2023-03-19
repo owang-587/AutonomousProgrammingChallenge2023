@@ -56,7 +56,7 @@ public:
   // updates the search tree for one starting vertex
   void updateSearchTree(std::string startId);
 
-  Path getShortestPath(std::string startId, std::string endId, DIRECTION startDirection);
+  std::vector<Path> getShortestPaths(std::string startId, std::string endId);
 
 private:
   int numOfGoalPoints = 0;
