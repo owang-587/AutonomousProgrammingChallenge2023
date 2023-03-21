@@ -39,6 +39,24 @@ include_directories(
 add_executable(${PROJECT_NAME}_node
     src/shell_simulation_node.cpp
     src/example_publisher.cpp
+    
+    src/gnss_subscriber.cpp
+    src/imu_subscriber.cpp
+    src/odometery_subscriber.cpp
+    src/collision_subscriber.cpp
+    src/vehiclestatus_subscriber.cpp
+    src/speedometer_subscriber.cpp
+
+    src/throttle_publisher.cpp
+    src/throttle_node.cpp
+    src/brake_publisher.cpp
+    src/brake_node.cpp
+    src/gear_publisher.cpp
+    src/gear_node.cpp
+    src/handbrake_publisher.cpp
+    src/handbrake_node.cpp
+    src/steering_publisher.cpp
+    src/steering_node.cpp
 )
 
 ## Rename C++ executable without prefix
