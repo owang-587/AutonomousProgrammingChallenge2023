@@ -9,14 +9,13 @@
 // use the working path to carry on 
 struct Path
 {
+  Path(){};
   Path(double distance, std::vector<std::string> verticesTaken, DIRECTION startDirection, DIRECTION endDirection);
 
   double distance;
   std::vector<std::string> verticesTaken;
   DIRECTION startDirection, endDirection;
 };
-
-
 
 
 class Graph {

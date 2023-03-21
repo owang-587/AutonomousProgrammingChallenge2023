@@ -110,41 +110,46 @@ Graph read_city_graph_undirected(){
 
 /********Using dijkstra to get the shortest paths connecting each node********/
 
-vector<Path> getDijkstraPaths(Graph& graph){
+map<string, vector<Path>> getDijkstraPaths(Graph& graph){
   
+  map<string, vector<Path>> dijkstraPaths;
   vector<string> goalPoints = graph.getGoalpoints();
-  vector<Path> shortestPaths;
-  for (int i = 0; i < goalPoints.size(); i++){
-    for (int j = i+1; j < goalPoints.size(); j++){
-      vector<Path> paths = graph.getShortestPaths(goalPoints[i], goalPoints[j]);
-      for (auto path : paths){
-        shortestPaths.push_back(path);
-      }
+  
 
-      paths = graph.getShortestPaths(goalPoints[j], goalPoints[i]);
-      for (auto path : paths){
+  for (int i = 0; i < goalPoints.size(); i++){
+    vector<Path> shortestPaths;
+    for (int j = 0; j < goalPoints.size(); j++){
+      if (i == j){
+        continue;
+      }
+      const vector<Path> PATHS = graph.getShortestPaths(goalPoints[i], goalPoints[j]);
+      for (auto path : PATHS){
         shortestPaths.push_back(path);
       }
     }
+    dijkstraPaths[goalPoints[i]] = shortestPaths;
   }
-  return shortestPaths;
+
+  return dijkstraPaths;
 }
 
-void printPaths(vector<Path>& shortestPaths){
-  for (auto path : shortestPaths){
-    if (path.verticesTaken.size() > 0){
-      cout << "From " << path.verticesTaken.front() 
-           << " facing "  << to_string(path.startDirection) 
-           << " to " << path.verticesTaken.back() 
-           << " has a distance of " << path.distance << endl;
+void printPaths(map<string, vector<Path>>& dijkstraPaths){
+  for (auto itr = dijkstraPaths.begin(); itr != dijkstraPaths.end(); itr++){
+    for (auto path : itr->second){
+      if (path.verticesTaken.size() > 0){
+        cout << "From " << path.verticesTaken.front() 
+            << " facing "  << to_string(path.startDirection) 
+            << " to " << path.verticesTaken.back() 
+            << " has a distance of " << path.distance << endl;
 
-      cout << "The path taken was: ";
-      for (auto vertex : path.verticesTaken){
-      cout << vertex << "->";
+        cout << "The path taken was: ";
+        for (auto vertex : path.verticesTaken){
+        cout << vertex << "->";
+        }
+        cout << "Done" << endl;
       }
-      cout << "Done" << endl;
     }
-  }
+  } 
 }
 
 /****************Creating the minimum spanning tree*****************/
@@ -160,17 +165,14 @@ public:
   }
 };
 
-map<string, vector<Path>> makeMinSpanTree(Graph& graph, string startId){
-  map<string, vector<Path>> minSpanningTree;
+vector<Path> makeMinSpanTree(Graph& graph, string startId){
+  vector<Path> minSpanningTree;
   priority_queue<Path, vector<Path>, Compare> pathQueue; 
   vector<string> goalPoints = graph.getGoalpoints();
-
-  minSpanningTree[startId];
   goalPoints.erase(find(goalPoints.begin(), goalPoints.end(), startId));
 
   // put in the intial values into the tree
   for (auto goalPoint : goalPoints){
-    minSpanningTree[goalPoint];
     vector<Path> shortestPaths = graph.getShortestPaths(startId, goalPoint);
     for (auto path : shortestPaths){
       pathQueue.push(path);
@@ -192,15 +194,14 @@ map<string, vector<Path>> makeMinSpanTree(Graph& graph, string startId){
     if(VERTEX_INDEX != goalPoints.end()){
       const string EDGE_START = currentPath.verticesTaken.front();
 
-      minSpanningTree[EDGE_START].push_back(currentPath);
-
+      minSpanningTree.push_back(currentPath);
       
-      reverse(currentPath.verticesTaken.begin(), currentPath.verticesTaken.end());
-      Path reversePath(currentPath);
-      reversePath.startDirection = getOpposite(currentPath.endDirection);
-      reversePath.endDirection = getOpposite(currentPath.startDirection);
+      // reverse(currentPath.verticesTaken.begin(), currentPath.verticesTaken.end());
+      // Path reversePath(currentPath);
+      // reversePath.startDirection = getOpposite(currentPath.endDirection);
+      // reversePath.endDirection = getOpposite(currentPath.startDirection);
 
-      minSpanningTree[EDGE_END].push_back(reversePath);
+      // minSpanningTree[EDGE_END].push_back(reversePath);
 
       goalPoints.erase(VERTEX_INDEX);
       // put in the intial values into the tree
@@ -225,13 +226,90 @@ void printMinSpanTree(map<string, vector<Path>>& minSpanningTree){
   }
 }
 
+void runNearestNeighbours(Graph& graph){
+  const int NUM_GOALPOINTS = graph.getGoalpoints().size();
+
+  map<string, vector<Path>> dijkstraPaths = getDijkstraPaths(graph);
+
+  vector<string> nearestNeighbourPath = {"GP1"};
+
+  Path nextPath;
+
+  const string CURRENT_VERTEX = nearestNeighbourPath.back();
+  const vector<Path> connections = dijkstraPaths[CURRENT_VERTEX];
+
+  double smallestDist = __DBL_MAX__;
+  double nnTotalDistance = 0;
+  string closestVertex;
+
+  // find the nearest neighbour
+  for (const auto& path : connections){
+    const string PATH_END_VERTEX = path.verticesTaken.back();
+    const bool NOT_SEARCHED = find(nearestNeighbourPath.begin(), nearestNeighbourPath.end(), PATH_END_VERTEX) == nearestNeighbourPath.end();
+    if (NOT_SEARCHED && path.distance < smallestDist){
+      smallestDist = path.distance;
+      closestVertex = PATH_END_VERTEX;
+      nextPath = path;
+    }
+  }
+
+  DIRECTION currentDirection = nextPath.endDirection;
+  nnTotalDistance += nextPath.distance;
+  nearestNeighbourPath.push_back(nextPath.verticesTaken.back());
+  
+  while (nearestNeighbourPath.size() < NUM_GOALPOINTS){
+    Path nextPath;
+    const string CURRENT_VERTEX = nearestNeighbourPath.back();
+    const vector<Path> connections = dijkstraPaths[CURRENT_VERTEX];
+
+    double smallestDist = __DBL_MAX__;
+    string closestVertex;
+
+    // find the nearest neighbour
+    for (const auto& path : connections){
+      const string PATH_END_VERTEX = path.verticesTaken.back();
+      const bool NOT_SEARCHED = find(nearestNeighbourPath.begin(), nearestNeighbourPath.end(), PATH_END_VERTEX) == nearestNeighbourPath.end();
+      if (NOT_SEARCHED && path.distance < smallestDist && path.startDirection == currentDirection){
+        smallestDist = path.distance;
+        closestVertex = PATH_END_VERTEX;
+        nextPath = path;
+      }
+    }
+
+    currentDirection = nextPath.endDirection;
+    nnTotalDistance += nextPath.distance;
+    nearestNeighbourPath.push_back(nextPath.verticesTaken.back());
+
+  }
+
+  for (auto path : nearestNeighbourPath){
+    cout << path << ' ';
+  }
+
+  cout << endl;
+
+  cout << "NN Distance: " << nnTotalDistance << endl;
+
+  vector<Path> mst = makeMinSpanTree(graph, "GP1");
+
+  double mstDistance = 0;
+  for (auto path : mst){
+    mstDistance += path.distance;
+  }
+
+  cout << "MST Distance: " << mstDistance << endl;
+
+  cout << "Score: " << (nnTotalDistance/mstDistance) << endl;  
+}
+
 
 
 int main(){
   Graph graph = read_city_graph_undirected();
   graph.createSearchTree();
+  
 
-
-
+  runNearestNeighbours(graph);
+  
   return 0;
 }
