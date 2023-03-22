@@ -3,9 +3,8 @@ project(shell_simulation)
 
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
 
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
+# System dependencies are found with CMake's conventions
+find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -16,14 +15,14 @@ catkin_package(
 ## Build ##
 ###########
 
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
+# Specify additional locations of header files
+# Your package locations should be listed before other locations
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
+# # Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/shell_simulation.cpp
 # )
